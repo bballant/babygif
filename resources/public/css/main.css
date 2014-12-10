@@ -1,0 +1,17 @@
+div.main {
+  font-family: "Lucida Sans Typewriter", monospace;
+  font-size: 2em;
+  padding: 5px;
+  text-align: center;
+}
+
+div.main div {
+  padding: 10px;
+}
+
+span.menucell {
+  margin: 1px;
+  background: pink;
+  width: 5px;
+  height: 5px;
+}
