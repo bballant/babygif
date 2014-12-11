@@ -37,6 +37,7 @@
 
 (defroutes app-routes
   (GET "/" [] (files-html gif-info-seq))
+  (GET "/timeline" [] (layout "timeline" (timeline (rando-gif-html))))
   (GET "/rando" [] (layout "randobabygif" (rando-gif-html)))
   (GET "/test" [] (layout "testtesttest" (draw-menu gif-info-seq)))
   (GET "/mo/:n" [n] (files-html (gif-infos-for-month (Integer/parseInt n) gif-info-seq)))

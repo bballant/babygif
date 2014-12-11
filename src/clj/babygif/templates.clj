@@ -14,7 +14,9 @@
   (html5 {:lang "en"}
          [:head [:title title]
           (include-css "css/main.css")]
-         [:body [:div {:class "container"} content]]))
+         [:body [:div {:class "container"}
+                 content]
+          (include-js "js/main.js")]))
 
 (defn menu-cell [d url]
   (html [:span {:class "menucell"
@@ -37,3 +39,12 @@
          (for [f files]
            [:li (f-html f)])]))
 
+(defn timeline [tops]
+  [:div tops
+  [:div {:class "timeline"}
+    (for [i (range 31)]
+      [:div {:class "column"}
+       [:label (str (+ i 1))]
+       [:ul
+        (for [i (range (+ 1 (rand 3)))]
+          [:li [:img {:src "/img/test.gif"}]])]])]])
