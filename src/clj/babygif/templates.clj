@@ -13,10 +13,10 @@
 (defn layout [title & content]
   (html5 {:lang "en"}
          [:head [:title title]
-          (include-css "css/main.css")]
+          (include-css "/css/main.css")]
          [:body [:div {:class "container"}
                  content]
-          (include-js "js/main.js")]))
+          (include-js "/js/main.js")]))
 
 (defn menu-cell [d url]
   (html [:span {:class "menucell"
@@ -29,10 +29,9 @@
 
 (defn f-html [f]
   (html [:div {:class "main"}
-         [:div (fmt-date (:date f))]
-         [:div [:img {:src (:path f) }]]
-         [:div {:style "display:none;"} (:name f)]
-         [:div [:a {:href "/rando"} "next"]]]))
+         [:div (fmt-date (f :date))]
+         [:div [:img {:src (str "/gifs/" (f :name) ".gif") }]]
+         [:div {:style "display:none;"} (:name f)]]))
 
 (defn files-html [files]
   (html [:ul
@@ -48,3 +47,23 @@
        [:ul
         (for [i (range (+ 1 (rand 3)))]
           [:li [:img {:src "/img/test.gif"}]])]])]])
+
+(defn thumb [info i]
+  (let [dt (info :date)]
+    [:li 
+     [:a {:href (str "/t/" (.getYear dt)
+                     "/" (.getMonthOfYear dt)
+                     "?d=" (- (.getDayOfMonth dt) 1)
+                     "&i=" i)}
+      [:img
+       {:src (str "/thms/" (info :name) "-thm.gif")}]]]))
+
+(defn thumbnails [gif-infos tops]
+  [:div tops
+  [:div {:class "timeline"}
+   (for [date-infos gif-infos]
+      [:div {:class "column"}
+       [:label (str (.getDayOfMonth ((first date-infos) :date)))]
+       [:ul
+        (map #(thumb %1 %2) date-infos (iterate inc 0))]])]])
+
