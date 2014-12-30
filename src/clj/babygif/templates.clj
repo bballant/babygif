@@ -1,69 +1,59 @@
 (ns babygif.templates
   (:require [hiccup.core :refer :all]
             [hiccup.page :refer :all]
-            [clj-time.format :as df]))
+            [clj-time.format :as df]
+            [babygif.gifinfo :refer :all]))
 
 (def date-fmt
   (df/formatter "E, MMM d YYYY"))
 
-(defn fmt-date [d]
+(def month-year-fmt
+  (df/formatter "MMM"))
+
+(defn fmt-date [d fmt]
   (if (= (.getYear d) 1970) ""
-    (df/unparse date-fmt d)))
+    (df/unparse fmt d)))
 
 (defn layout [title & content]
   (html5 {:lang "en"}
          [:head [:title title]
           (include-css "/css/main.css")]
          [:body [:div {:class "container"}
+                 [:h1 "Noa & Ava Year One in Gifs"]
                  content]
           (include-js "/js/main.js")]))
 
-(defn menu-cell [d url]
-  (html [:span {:class "menucell"
-                :onclick (str "location.href=" url)} "&nbsp;"]))
+(defn main-content [topnav middle botnav]
+  [:div topnav middle botnav])
 
-(defn draw-menu [files]
-  (html [:div {:class "menu"}
-         (for [f files]
-          (menu-cell (:date f) (:path f)))]))
+(defn topthumb [info]
+  [:div [:label (fmt-date (info :date) month-year-fmt)]
+   [:a {:href (str "/t/" (iyear info) "/" (imonth info))}
+    [:img {:src (str "/thms/" (info :name) "-thm.gif")}]]])
+
+(defn topthumbs [infos]
+  [:div {:class "topnav"} (map topthumb infos)])
 
 (defn f-html [f]
-  (html [:div {:class "main"}
-         [:div (fmt-date (f :date))]
-         [:div [:img {:src (str "/gifs/" (f :name) ".gif") }]]
-         [:div {:style "display:none;"} (:name f)]]))
-
-(defn files-html [files]
-  (html [:ul
-         (for [f files]
-           [:li (f-html f)])]))
-
-(defn timeline [tops]
-  [:div tops
-  [:div {:class "timeline"}
-    (for [i (range 31)]
-      [:div {:class "column"}
-       [:label (str (+ i 1))]
-       [:ul
-        (for [i (range (+ 1 (rand 3)))]
-          [:li [:img {:src "/img/test.gif"}]])]])]])
+  [:div {:class "main"}
+   [:div (fmt-date (f :date) date-fmt)]
+   [:div [:img {:src (str "/gifs/" (f :name) ".gif") }]]
+   [:div {:style "display:none;"} (:name f)]])
 
 (defn thumb [info i]
-  (let [dt (info :date)]
-    [:li 
-     [:a {:href (str "/t/" (.getYear dt)
-                     "/" (.getMonthOfYear dt)
-                     "?d=" (- (.getDayOfMonth dt) 1)
-                     "&i=" i)}
-      [:img
-       {:src (str "/thms/" (info :name) "-thm.gif")}]]]))
+  [:li 
+   [:a {:href
+        (str "/t/" (iyear info) "/" (imonth info)
+             "?d=" (iday info) "&i=" i)}
+    [:img
+     {:src (str "/thms/" (info :name) "-thm.gif")}]]])
 
-(defn thumbnails [gif-infos tops]
-  [:div tops
+(defn thumbnails [infos-day]
   [:div {:class "timeline"}
-   (for [date-infos gif-infos]
-      [:div {:class "column"}
-       [:label (str (.getDayOfMonth ((first date-infos) :date)))]
-       [:ul
-        (map #(thumb %1 %2) date-infos (iterate inc 0))]])]])
+   (for [day (sort (keys infos-day))]
+     (let [infos (infos-day day)]
+       [:div {:class "column"}
+        [:label (str day)]
+        [:ul
+         (map #(thumb %1 %2) infos (iterate inc 0))]]))])
 

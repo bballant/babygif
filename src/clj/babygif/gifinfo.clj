@@ -16,3 +16,12 @@
 
 (defn read-gif-info-list [filename]
   (map gif-info (read-gif-info-json filename)))
+
+(defn iyear [gif-info]
+  (.getYear (gif-info :date)))
+
+(defn imonth [gif-info]
+  (.getMonthOfYear (gif-info :date)))
+
+(defn iday [gif-info]
+  (.getDayOfMonth (gif-info :date)))
