@@ -5,6 +5,7 @@
 (defn read-gif-info-json [filename]
   (json/read (clojure.java.io/reader filename)))
 
+; actually, should be able to use date parser to parse directly :-)
 (defn datestr->date [datestr]
   (let [{year 0, month 1, day 2 :or {year 1970, month 1, day 1}}
          (vec (map #(Integer/parseInt %) (re-seq #"\d+" datestr)))]
